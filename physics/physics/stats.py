@@ -2,8 +2,7 @@
 
 Entry point: compute_coil_stats(coil) -> CoilStats
 
-Supported geometry types: circular, racetrack, elliptical, toroidal.
-elongated_toroidal raises NotImplementedError (not yet implemented).
+Supported geometry types: circular, racetrack, elliptical, toroidal, elongated_toroidal.
 
 Physical model for flat-coil types (circular, racetrack, elliptical):
     wire_length  = circumference(nominal geometry) × turns
@@ -27,11 +26,13 @@ Shared:
 
 from physics.geometry import circular, elliptical, racetrack
 from physics.geometry import toroidal as toroidal_geom
+from physics.geometry import elongated_toroidal as elongated_toroidal_geom
 from physics.types import (
     CircularGeometry,
     CoilDef,
     CoilStats,
     EllipticalGeometry,
+    ElongatedToroidalGeometry,
     PackingStats,
     RacetrackGeometry,
     ToroidalGeometry,
@@ -81,6 +82,13 @@ def compute_coil_stats(coil: CoilDef) -> CoilStats:
         length = toroidal_geom.total_wire_length(
             geom.majorRadius, geom.minorRadius,
             winding.windingMode,    # guaranteed non-None by CoilDef validator
+            winding.turns,
+        )
+    elif isinstance(geom, ElongatedToroidalGeometry):
+        # Same exact-sum approach; see geometry/elongated_toroidal.py for derivation.
+        length = elongated_toroidal_geom.total_wire_length(
+            geom.majorRadius, geom.minorRadius, geom.extension,
+            winding.windingMode,
             winding.turns,
         )
     else:

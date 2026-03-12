@@ -94,8 +94,8 @@
     },
     {
       "check": "turn_0_loop_normal",
-      "normal_expected": { "x": -1.0, "y": 0.0, "z": 0.0 },
-      "note": "T_hat on top straight = (-1, 0, 0)"
+      "normal_expected": { "x": 1.0, "y": 0.0, "z": 0.0 },
+      "note": "Area-vector normal = -T_hat. T_hat=(-1,0,0) so area normal=(+1,0,0). Consistent with toroidal.py: poloidal loop normal = -phi_hat = -T_hat_tangential."
     },
     {
       "check": "arc_length_step",

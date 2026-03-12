@@ -189,20 +189,6 @@ def test_elliptical_stats():
     assert result.errors == []
 
 
-# ---------------------------------------------------------------------------
-# Unsupported geometry
-# ---------------------------------------------------------------------------
-
-def test_elongated_toroidal_raises():
-    coil = _make_coil(
-        ElongatedToroidalGeometry(
-            type="elongated_toroidal", majorRadius=0.10, minorRadius=0.02, extension=0.05
-        ),
-        winding_mode="poloidal",
-    )
-    with pytest.raises(NotImplementedError):
-        compute_coil_stats(coil)
-
 
 # ---------------------------------------------------------------------------
 # Warning: wire too wide for channel

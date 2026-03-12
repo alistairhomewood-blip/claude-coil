@@ -186,17 +186,3 @@ def test_elliptical_discretise():
     np.testing.assert_allclose(np.max(np.abs(path[:, 0])), 0.2, rtol=1e-3)
     np.testing.assert_allclose(np.max(np.abs(path[:, 1])), 0.1, rtol=1e-3)
 
-
-# ---------------------------------------------------------------------------
-# Unsupported geometry
-# ---------------------------------------------------------------------------
-
-def test_elongated_toroidal_raises():
-    coil = _coil(
-        ElongatedToroidalGeometry(
-            type="elongated_toroidal", majorRadius=0.10, minorRadius=0.02, extension=0.05
-        ),
-        winding_mode="poloidal",
-    )
-    with pytest.raises(NotImplementedError):
-        discretise_coil(coil)
