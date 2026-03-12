@@ -1,0 +1,106 @@
+{
+  "description": "Racetrack torus, toroidal winding. R=0.10m, r=0.02m, E=0.05m, N=100, I=1A. Each turn is a large closed loop tracing the racetrack centreline at a fixed poloidal offset. Turns distributed evenly around the tube cross-section by poloidal angle.",
+  "coil": {
+    "id": "ref-etoroid-tor-01",
+    "name": "elongated toroidal solenoid (toroidal winding)",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "elongated_toroidal",
+      "majorRadius": 0.10,
+      "minorRadius": 0.02,
+      "extension": 0.05
+    },
+    "winding": {
+      "turns": 100,
+      "current": 1.0,
+      "channelWidth": 0.005,
+      "windingMode": "toroidal",
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "geometry_interpretation": {
+    "centreline": "racetrack (stadium) in XY plane. Right arc centre (E,0,0)=(0.05,0,0), left arc centre (-E,0,0)=(-0.05,0,0). Arc radius R=0.10m. Straight sections at y=±R=±0.10m, each of length 2E=0.10m.",
+    "centreline_perimeter": "L_cl = 2*pi*R + 4*E = 2*pi*0.10 + 4*0.05 = 0.62832 + 0.20000 = 0.82832 m",
+    "tube_cross_section": "circle of radius minorRadius=0.02m",
+    "turn_k_poloidal_angle": "psi_k = 2*pi*k/N, k=0..N-1",
+    "turn_k_description": "Turn k traces the closed racetrack path at a constant radial offset from the centreline. The offset is r*cos(psi_k) in the N_frame direction (outward from the local racetrack centre) and r*sin(psi_k) in the Z-hat direction.",
+    "turn_k_points": "p_k(s) = centreline(s) + r*cos(psi_k)*N_frame(s) + r*sin(psi_k)*Z_hat",
+    "offset_detail_on_arcs": "On the right arc (centre (E,0,0)), N_frame = outward radial from (E,0,0). Effective arc radius = R + r*cos(psi_k). On the left arc, same formula relative to (-E,0,0).",
+    "offset_detail_on_straights": "On top straight (y=R, T_hat=(-1,0,0)), N_frame=(0,1,0). Turn k runs at y = R + r*cos(psi_k). On bottom straight (y=-R, T_hat=(+1,0,0)), N_frame=(0,-1,0). Turn k runs at y = -(R + r*cos(psi_k)).",
+    "racetrack_sections_ccw": [
+      "Section 0: top straight, T_hat=(-1,0,0), N_frame=(0,1,0)",
+      "Section 1: left arc, centre (-E,0,0), N_frame = outward from (-E,0,0)",
+      "Section 2: bottom straight, T_hat=(+1,0,0), N_frame=(0,-1,0)",
+      "Section 3: right arc, centre (E,0,0), N_frame = outward from (E,0,0)"
+    ]
+  },
+  "winding_mode_interpretation": {
+    "windingMode": "toroidal",
+    "description": "Each turn k is a closed loop tracing the racetrack centreline at poloidal offset psi_k = 2*pi*k/N. Turn k runs at (r*cos(psi_k)) outward and (r*sin(psi_k)) vertically relative to the centreline.",
+    "per_turn_wire_length_approx": "L_cl = 2*pi*R + 4*E = 0.82832 m (to first order, same for all turns)",
+    "per_turn_wire_length_exact": "Exact length varies slightly by psi_k. On arcs: effective radius = R + r*cos(psi_k), so arc contribution is pi*(R + r*cos(psi_k)) per arc, vs pi*R for centreline. On straights: no change. Correction term: 2*pi*r*cos(psi_k).",
+    "per_turn_wire_length_note": "Full exact length: L_cl + 2*pi*r*cos(psi_k). Average over N turns = L_cl (since mean of cos(psi_k) = 0).",
+    "total_wire_length": "N * L_cl = 100 * 0.82832 = 82.832 m (first-order approximation)"
+  },
+  "discretisation_interpretation": {
+    "num_filament_paths": 100,
+    "path_k_description": "Closed racetrack loop offset by (r*cos(psi_k), 0) outward and (0, 0, r*sin(psi_k)) vertically from the centreline. Parameterised by arc-length position s around the racetrack.",
+    "path_k_parametric": "p_k(s) = centreline(s) + r*cos(psi_k)*N_frame(s) + r*sin(psi_k)*Z_hat,  s in [0, L_cl)"
+  },
+  "checks": [
+    {
+      "check": "centreline_perimeter",
+      "perimeter_expected": 0.82832,
+      "tol_abs": 1e-4,
+      "note": "L_cl = 2*pi*R + 4*E = 2*pi*0.10 + 4*0.05 = 0.82832 m"
+    },
+    {
+      "check": "wire_length",
+      "wireLength_expected": 82.832,
+      "tol_abs": 0.01,
+      "note": "N * L_cl = 100 * 0.82832 = 82.832 m (first-order). Exact: 82.832 + 2*pi*r*sum_k cos(psi_k) = 82.832 + 0 = 82.832 m."
+    },
+    {
+      "check": "discretisation_count",
+      "filament_paths_expected": 100,
+      "note": "One filament path per turn"
+    },
+    {
+      "check": "turn_0_top_straight_y",
+      "psi_0": 0.0,
+      "y_on_top_straight": 0.12,
+      "note": "psi_0=0: outward offset = r*cos(0) = r = 0.02m. Top straight runs at y = R + r = 0.10 + 0.02 = 0.12m."
+    },
+    {
+      "check": "turn_0_right_arc_effective_radius",
+      "psi_0": 0.0,
+      "effective_arc_radius_expected": 0.12,
+      "note": "psi_0=0: on the right arc (centre (E,0)), effective radius = R + r*cos(0) = 0.10 + 0.02 = 0.12m."
+    },
+    {
+      "check": "turn_25_top_straight_y",
+      "psi_25": 1.5707963267948966,
+      "y_on_top_straight": 0.10,
+      "z_on_top_straight": 0.02,
+      "tol_abs": 1e-10,
+      "note": "psi_25=pi/2: outward offset=r*cos(pi/2)=0, vertical offset=r*sin(pi/2)=r=0.02m. Top straight at y=R=0.10m, z=0.02m."
+    },
+    {
+      "check": "turn_50_right_arc_effective_radius",
+      "psi_50": 3.141592653589793,
+      "effective_arc_radius_expected": 0.08,
+      "note": "psi_50=pi: on the right arc, effective radius = R + r*cos(pi) = 0.10 - 0.02 = 0.08m (innermost layer)."
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "description": "Single circular loop, R=0.1m, I=1A, N=1. Verifies on-axis B field and right-hand rule direction.",
+  "coil": {
+    "id": "ref-single-loop-01",
+    "name": "single circular loop",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "circular",
+      "radius": 0.1
+    },
+    "winding": {
+      "turns": 1,
+      "current": 1.0,
+      "channelWidth": 0.01,
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "checks": [
+    {
+      "point": { "x": 0, "y": 0, "z": 0 },
+      "Bz_expected": 6.2832e-6,
+      "tol_rel": 0.005,
+      "note": "B = mu0*I/(2R) = 4pi*1e-7 * 1 / (2*0.1) = 6.2832e-6 T"
+    },
+    {
+      "point": { "x": 0, "y": 0, "z": 0.1 },
+      "Bz_expected": 2.2214e-6,
+      "tol_rel": 0.005,
+      "note": "B = mu0*I*R^2 / (2*(R^2+z^2)^1.5) at z=R: mu0*0.01/(2*0.02^1.5) = 2.2214e-6 T"
+    },
+    {
+      "direction_check": "Bz > 0 at center for positive current with identity rotation",
+      "note": "Identity rotation => n_hat = +Z. Positive current => CCW from above => B along +Z."
+    }
+  ]
+}

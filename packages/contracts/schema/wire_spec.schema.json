@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wire_spec.schema.json",
+  "title": "WireSpec",
+  "description": "Wire conductor specification. Two diameters are always required and must never be conflated. bareD drives resistance and mass; insulatedD drives packing and fit checks.",
+  "type": "object",
+  "required": ["label", "bareD", "insulatedD", "area"],
+  "additionalProperties": false,
+  "properties": {
+    "awg": {
+      "type": ["integer", "null"],
+      "description": "AWG gauge number, or null for custom wire."
+    },
+    "label": {
+      "type": "string",
+      "description": "Human-readable label, e.g. 'AWG24' or 'Custom 0.5mm'."
+    },
+    "bareD": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Bare copper outer diameter, metres. Use ONLY for resistance (R = ρL/A) and mass calculations."
+    },
+    "insulatedD": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Insulated outer diameter, metres. Use ONLY for packing geometry and U-channel fit checks."
+    },
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Bare copper cross-sectional area, m². Must equal π*(bareD/2)². Stored explicitly to avoid repeated computation."
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "b_field_slice_result.schema.json",
+  "title": "BFieldSliceResult",
+  "description": "Response body for POST /api/bfield/slice. All field values in tesla. Grid is in Z-up frame. Outer array index corresponds to xGrid, inner array index corresponds to yGrid.",
+  "type": "object",
+  "required": ["sliceZ", "xGrid", "yGrid", "Bx", "By", "Bz", "Bmag"],
+  "additionalProperties": false,
+  "properties": {
+    "sliceZ": {
+      "type": "number",
+      "description": "The Z height at which the slice was computed, metres."
+    },
+    "xGrid": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "X coordinates of the grid points, metres. Length = resolution."
+    },
+    "yGrid": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Y coordinates of the grid points, metres. Length = resolution."
+    },
+    "Bx": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" }
+      },
+      "description": "X component of B field, tesla. Shape: [len(xGrid)][len(yGrid)]."
+    },
+    "By": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" }
+      },
+      "description": "Y component of B field, tesla. Shape: [len(xGrid)][len(yGrid)]."
+    },
+    "Bz": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" }
+      },
+      "description": "Z component of B field, tesla. Shape: [len(xGrid)][len(yGrid)]."
+    },
+    "Bmag": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" }
+      },
+      "description": "Magnitude |B|, tesla. Shape: [len(xGrid)][len(yGrid)]. = sqrt(Bx²+By²+Bz²)."
+    }
+  }
+}

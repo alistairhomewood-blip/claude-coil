@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "coil_stats.schema.json",
+  "title": "CoilStats",
+  "description": "Computed electrical and geometric statistics for a single coil. Returned by POST /api/stats. Not stored in the project file — recomputed on demand.",
+  "type": "object",
+  "required": ["coilId", "wireLength", "wireMass", "resistance", "power", "voltage", "packing", "warnings", "errors"],
+  "additionalProperties": false,
+  "properties": {
+    "coilId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "wireLength": {
+      "type": "number",
+      "description": "Total wire length, metres. = circumference × turns."
+    },
+    "wireMass": {
+      "type": "number",
+      "description": "Total wire mass, kg. = CU_DENSITY × wireLength × wire.area."
+    },
+    "resistance": {
+      "type": "number",
+      "description": "DC resistance, ohms. = CU_RESISTIVITY × wireLength / wire.area. Uses bare copper area."
+    },
+    "power": {
+      "type": "number",
+      "description": "Power dissipated, watts. = current² × resistance."
+    },
+    "voltage": {
+      "type": "number",
+      "description": "Required voltage, volts. = |current| × resistance."
+    },
+    "packing": {
+      "type": "object",
+      "required": ["turnsPerLayer", "numLayers", "channelDepth", "fitsInChannel"],
+      "additionalProperties": false,
+      "properties": {
+        "turnsPerLayer": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "floor(channelWidth / wire.insulatedD). Uses insulated OD."
+        },
+        "numLayers": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "ceil(turns / turnsPerLayer). 0 if wire does not fit."
+        },
+        "channelDepth": {
+          "type": "number",
+          "description": "Total depth needed, metres. = numLayers × wire.insulatedD."
+        },
+        "fitsInChannel": {
+          "type": "boolean",
+          "description": "True if turnsPerLayer >= 1 (wire physically fits in the channel)."
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Unusual but allowed conditions. Non-blocking."
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Physically invalid or impossible conditions. Blocks export."
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "b_field_slice_request.schema.json",
+  "title": "BFieldSliceRequest",
+  "description": "Request body for POST /api/bfield/slice. The backend computes the field from discretised filament paths only (no approximations). All coordinates in metres, Z-up frame.",
+  "type": "object",
+  "required": ["sliceZ", "xMin", "xMax", "yMin", "yMax", "resolution"],
+  "additionalProperties": false,
+  "properties": {
+    "coilIds": {
+      "type": "array",
+      "items": { "type": "string", "format": "uuid" },
+      "description": "Coil IDs to include in the computation. Empty array = include all coils in the project."
+    },
+    "sliceZ": {
+      "type": "number",
+      "description": "Height of the slice plane in the Z-up global frame, metres."
+    },
+    "xMin": {
+      "type": "number",
+      "description": "Minimum X bound of the slice grid, metres."
+    },
+    "xMax": {
+      "type": "number",
+      "description": "Maximum X bound of the slice grid, metres."
+    },
+    "yMin": {
+      "type": "number",
+      "description": "Minimum Y bound of the slice grid, metres."
+    },
+    "yMax": {
+      "type": "number",
+      "description": "Maximum Y bound of the slice grid, metres."
+    },
+    "resolution": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 2048,
+      "description": "Number of grid points along each axis. Total field evaluations = resolution²."
+    }
+  }
+}

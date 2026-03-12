@@ -1,0 +1,99 @@
+{
+  "description": "Circular torus, poloidal winding. R=0.15m, r=0.02m, N=100, I=1A. Each turn is a small loop around the tube cross-section. Turns distributed evenly around the centreline by toroidal angle.",
+  "coil": {
+    "id": "ref-toroid-pol-01",
+    "name": "toroidal solenoid (poloidal winding)",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "toroidal",
+      "majorRadius": 0.15,
+      "minorRadius": 0.02
+    },
+    "winding": {
+      "turns": 100,
+      "current": 1.0,
+      "channelWidth": 0.005,
+      "windingMode": "poloidal",
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "geometry_interpretation": {
+    "centreline": "circle of radius majorRadius=0.15m in XY plane, axis=Z",
+    "tube_cross_section": "circle of radius minorRadius=0.02m",
+    "turn_k_position": "toroidal angle phi_k = 2*pi*k/N, k=0..N-1",
+    "turn_k_centre": "(R cos phi_k, R sin phi_k, 0)",
+    "turn_k_loop_normal": "(sin phi_k, -cos phi_k, 0)  — computed from area vector via right-hand rule. For parametrisation p_k(psi)=(R+r cos psi) r_hat_k + r sin psi z_hat, the area vector is in the -phi_hat_k direction: n_hat_k = (sin phi_k, -cos phi_k, 0).",
+    "turn_k_points": "p(psi) = (R + r cos(psi))(cos phi_k, sin phi_k, 0) + r sin(psi) * Z_hat"
+  },
+  "winding_mode_interpretation": {
+    "windingMode": "poloidal",
+    "description": "Each turn k is a closed loop of circumference 2*pi*r wound around the tube cross-section. The N turns are distributed evenly around the major circle by toroidal angle phi_k = 2*pi*k/N.",
+    "per_turn_wire_length": "2 * pi * minorRadius = 2 * pi * 0.02 = 0.12566 m",
+    "per_turn_wire_length_note": "Approximation: ignores toroidal helix pitch. Error < 0.3% for N>=20.",
+    "total_wire_length": "N * 2 * pi * r = 100 * 0.12566 = 12.566 m"
+  },
+  "discretisation_interpretation": {
+    "num_filament_paths": 100,
+    "path_k_description": "Circle of radius r=0.02m in the plane containing Z-axis and radial direction r_hat_k=(cos phi_k, sin phi_k, 0). Centre at (R cos phi_k, R sin phi_k, 0).",
+    "path_k_parametric": "p_k(psi) = (R + r cos psi) * r_hat_k  +  r sin(psi) * z_hat,  psi in [0, 2pi)"
+  },
+  "checks": [
+    {
+      "check": "wire_length",
+      "wireLength_expected": 12.566,
+      "tol_abs": 0.001,
+      "note": "N * 2*pi*r = 100 * 2*pi*0.02 = 12.566 m"
+    },
+    {
+      "check": "circumference",
+      "circumference_expected": 0.12566,
+      "tol_abs": 1e-4,
+      "note": "2*pi*r = 2*pi*0.02 = 0.12566 m (per turn)"
+    },
+    {
+      "check": "discretisation_count",
+      "filament_paths_expected": 100,
+      "note": "One filament path per turn"
+    },
+    {
+      "check": "turn_0_centre",
+      "centre_expected": { "x": 0.15, "y": 0.0, "z": 0.0 },
+      "note": "phi_0 = 0: centre at (R, 0, 0)"
+    },
+    {
+      "check": "turn_0_loop_normal",
+      "normal_expected": { "x": 0.0, "y": -1.0, "z": 0.0 },
+      "note": "Loop normal from right-hand rule applied to p_0(psi)=(R+r cos psi, 0, r sin psi). Area vector integral = (0, -pi*r^2, 0), so n_hat_0 = (0, -1, 0) = -phi_hat_0. N.B. the outward radial r_hat_0=(1,0,0) is NOT the loop normal."
+    },
+    {
+      "check": "turn_25_centre",
+      "centre_expected": { "x": 0.0, "y": 0.15, "z": 0.0 },
+      "tol_abs": 1e-10,
+      "note": "phi_25 = 2*pi*25/100 = pi/2: centre at (0, R, 0)"
+    },
+    {
+      "check": "Bfield_inside",
+      "point": { "x": 0.15, "y": 0, "z": 0 },
+      "Bmag_expected": 1.3333e-4,
+      "tol_rel": 0.02,
+      "note": "Ampere: B = mu0*N*I/(2*pi*R) = 4pi*1e-7*100*1/(2*pi*0.15) = 1.3333e-4 T. 2% tolerance for N=100 discretisation."
+    },
+    {
+      "check": "Bfield_outside",
+      "point": { "x": 0.30, "y": 0, "z": 0 },
+      "Bmag_max": 1e-7,
+      "note": "Outside torus (r > R+r_tube): B must be near zero by Ampere's law."
+    }
+  ]
+}

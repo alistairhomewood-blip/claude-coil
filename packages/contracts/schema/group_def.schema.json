@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "group_def.schema.json",
+  "title": "GroupDef",
+  "description": "A flat group of coils. No nested groups. A coil can belong to at most one group. Transforms applied to a group use the group centroid as the pivot.",
+  "type": "object",
+  "required": ["id", "name", "coilIds"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coilIds": {
+      "type": "array",
+      "items": { "type": "string", "format": "uuid" },
+      "description": "Ordered list of coil IDs in this group. Each coil ID must exist in the project's coils array."
+    },
+    "locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, all coils in the group are locked."
+    }
+  }
+}

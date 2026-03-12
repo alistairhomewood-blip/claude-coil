@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "coil_def.schema.json",
+  "title": "CoilDef",
+  "description": "Canonical coil definition. The coil type is determined solely by geometry.type. No top-level type field. No stored normal vector — n̂ is derived from rotationEulerDeg in physics code only. filamentPaths is not stored here; it is transient output from /api/discretise.",
+  "type": "object",
+  "required": ["id", "name", "center", "rotationEulerDeg", "geometry", "winding"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "geometry": {
+            "properties": { "type": { "enum": ["toroidal", "elongated_toroidal"] } },
+            "required": ["type"]
+          }
+        },
+        "required": ["geometry"]
+      },
+      "then": {
+        "properties": {
+          "winding": {
+            "required": ["windingMode"],
+            "properties": {
+              "windingMode": { "$ref": "#/$defs/WindingMode" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "winding": {
+            "properties": {
+              "windingMode": { "type": "null" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique coil identifier."
+    },
+    "groupId": {
+      "type": ["string", "null"],
+      "description": "ID of the group this coil belongs to, or null."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "User-editable display name."
+    },
+    "colour": {
+      "type": ["string", "null"],
+      "pattern": "^#[0-9a-fA-F]{6}$",
+      "description": "CSS hex colour string (e.g. '#ff6600'), or null to use the default."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "Optional user notes."
+    },
+    "locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, the coil cannot be edited or moved until explicitly unlocked."
+    },
+    "center": {
+      "$ref": "#/$defs/Vec3",
+      "description": "Centroid of the coil in the global Z-up frame, metres."
+    },
+    "rotationEulerDeg": {
+      "$ref": "#/$defs/Vec3",
+      "description": "ZYX intrinsic Euler angles in degrees. Identity (0,0,0) = coil lies in XY plane, axis = +Z. n̂ is derived from this in physics code; it is never stored."
+    },
+    "geometry": {
+      "$ref": "#/$defs/CoilGeometry",
+      "description": "Type-discriminated geometry parameters. geometry.type is the sole coil-type discriminator."
+    },
+    "winding": {
+      "$ref": "#/$defs/WindingSpec"
+    }
+  },
+  "$defs": {
+    "Vec3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+    "WindingSpec": {
+      "type": "object",
+      "required": ["turns", "current", "wire", "channelWidth"],
+      "additionalProperties": false,
+      "properties": {
+        "turns": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of wire turns, summed across all layers."
+        },
+        "current": {
+          "type": "number",
+          "description": "Signed amperes. Positive = CCW from +n̂ (right-hand rule). Negate to reverse field direction."
+        },
+        "wire": {
+          "$ref": "wire_spec.schema.json"
+        },
+        "channelWidth": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Internal width of the U-channel in metres. Packing uses wire.insulatedD against this value."
+        },
+        "windingMode": {
+          "oneOf": [
+            { "$ref": "#/$defs/WindingMode" },
+            { "type": "null" }
+          ],
+          "description": "Required when geometry.type is 'toroidal' or 'elongated_toroidal'; must be null or absent for all other geometry types. Describes how turns are arranged on the torus surface."
+        }
+      }
+    },
+    "CoilGeometry": {
+      "oneOf": [
+        { "$ref": "#/$defs/CircularGeometry" },
+        { "$ref": "#/$defs/RacetrackGeometry" },
+        { "$ref": "#/$defs/EllipticalGeometry" },
+        { "$ref": "#/$defs/ToroidalGeometry" },
+        { "$ref": "#/$defs/ElongatedToroidalGeometry" }
+      ]
+    },
+    "CircularGeometry": {
+      "type": "object",
+      "required": ["type", "radius"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "circular" },
+        "radius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Distance from center to wire centerline, metres. Circumference = 2πr."
+        }
+      }
+    },
+    "RacetrackGeometry": {
+      "type": "object",
+      "required": ["type", "straightLength", "arcRadius"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "racetrack" },
+        "straightLength": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Length of one straight segment, metres. Total straight run = 2 × straightLength. Circumference = 2πr + 2L."
+        },
+        "arcRadius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Radius of the semicircular ends, metres."
+        }
+      }
+    },
+    "EllipticalGeometry": {
+      "type": "object",
+      "required": ["type", "semiMajor", "semiMinor"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "elliptical" },
+        "semiMajor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Semi-major axis at wire centerline, metres."
+        },
+        "semiMinor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Semi-minor axis at wire centerline, metres. Must be <= semiMajor."
+        }
+      }
+    },
+    "WindingMode": {
+      "type": "string",
+      "enum": ["poloidal", "toroidal"],
+      "description": "How turns are arranged on the torus surface. 'poloidal': each turn is a small loop around the tube cross-section; turns distributed evenly along the centreline by arc length. 'toroidal': each turn is a large loop around the torus axis/centreline; turns distributed evenly around the tube cross-section by poloidal angle. Only applies to toroidal-family geometry types."
+    },
+    "ToroidalGeometry": {
+      "type": "object",
+      "required": ["type", "majorRadius", "minorRadius"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "toroidal" },
+        "majorRadius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Distance from the torus axis (Z) to the tube centreline, metres. Must be > minorRadius."
+        },
+        "minorRadius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Radius of the tube cross-section, metres. Must be < majorRadius."
+        }
+      }
+    },
+    "ElongatedToroidalGeometry": {
+      "type": "object",
+      "required": ["type", "majorRadius", "minorRadius", "extension"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "elongated_toroidal" },
+        "majorRadius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Radius of the semicircular ends of the racetrack centreline, metres."
+        },
+        "minorRadius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Radius of the tube cross-section, metres."
+        },
+        "extension": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Half-length of each straight section of the racetrack centreline, metres."
+        }
+      }
+    }
+  }
+}

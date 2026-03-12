@@ -1,0 +1,41 @@
+{
+  "description": "Racetrack coil: straightLength=0.1m, arcRadius=0.05m, N=1, I=1A. Verifies circumference formula: C = 2*pi*arcRadius + 2*straightLength.",
+  "coil": {
+    "id": "ref-racetrack-01",
+    "name": "racetrack coil",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "racetrack",
+      "straightLength": 0.1,
+      "arcRadius": 0.05
+    },
+    "winding": {
+      "turns": 1,
+      "current": 1.0,
+      "channelWidth": 0.01,
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "checks": [
+    {
+      "circumference_expected": 0.514159,
+      "tol_abs": 1e-5,
+      "note": "C = 2*pi*0.05 + 2*0.1 = 0.314159 + 0.200000 = 0.514159 m"
+    },
+    {
+      "path_length_check": "sum of segment lengths from discretised path must equal circumference to within 0.5%",
+      "note": "Ensures geometry discretisation is consistent with the analytic circumference formula."
+    }
+  ]
+}

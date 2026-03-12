@@ -1,0 +1,99 @@
+{
+  "description": "Circular torus, toroidal winding. R=0.15m, r=0.02m, N=100, I=1A. Each turn is a large horizontal loop around the torus axis. Turns distributed evenly around the tube cross-section by poloidal angle.",
+  "coil": {
+    "id": "ref-toroid-tor-01",
+    "name": "toroidal solenoid (toroidal winding)",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "toroidal",
+      "majorRadius": 0.15,
+      "minorRadius": 0.02
+    },
+    "winding": {
+      "turns": 100,
+      "current": 1.0,
+      "channelWidth": 0.005,
+      "windingMode": "toroidal",
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "geometry_interpretation": {
+    "centreline": "circle of radius majorRadius=0.15m in XY plane, axis=Z",
+    "tube_cross_section": "circle of radius minorRadius=0.02m",
+    "turn_k_poloidal_angle": "psi_k = 2*pi*k/N, k=0..N-1",
+    "turn_k_height": "z_k = r * sin(psi_k)",
+    "turn_k_effective_radius": "rho_k = R + r * cos(psi_k)",
+    "turn_k_loop_normal": "(0, 0, 1) for all turns — each turn is an azimuthal loop whose normal is the torus axis Z",
+    "turn_k_points": "p_k(phi) = rho_k * (cos(phi), sin(phi), 0) + (0, 0, z_k)"
+  },
+  "winding_mode_interpretation": {
+    "windingMode": "toroidal",
+    "description": "Each turn k is a closed horizontal loop of circumference 2*pi*rho_k wound around the torus axis. The N turns are distributed evenly around the tube cross-section by poloidal angle psi_k = 2*pi*k/N.",
+    "per_turn_wire_length_exact": "2 * pi * rho_k = 2 * pi * (R + r * cos(psi_k))",
+    "per_turn_wire_length_avg": "2 * pi * R = 2 * pi * 0.15 = 0.9425 m  (average over N turns, since mean of cos(psi_k) = 0)",
+    "total_wire_length": "N * 2 * pi * R = 100 * 0.9425 = 94.25 m  (first-order approximation)"
+  },
+  "discretisation_interpretation": {
+    "num_filament_paths": 100,
+    "path_k_description": "Horizontal circle at height z_k = r*sin(psi_k), effective radius rho_k = R + r*cos(psi_k). All paths have normal (0,0,1).",
+    "path_k_parametric": "p_k(phi) = (R + r cos psi_k)(cos phi, sin phi, 0) + (0, 0, r sin psi_k),  phi in [0, 2pi)"
+  },
+  "checks": [
+    {
+      "check": "wire_length",
+      "wireLength_expected": 94.248,
+      "tol_abs": 0.01,
+      "note": "N * 2*pi*R = 100 * 2*pi*0.15 = 94.248 m. First-order approx; exact = sum_k 2*pi*rho_k = 2*pi*(N*R + r*sum(cos psi_k)) = 2*pi*N*R since sum(cos(2*pi*k/N)) = 0 for k=0..N-1."
+    },
+    {
+      "check": "discretisation_count",
+      "filament_paths_expected": 100,
+      "note": "One filament path per turn"
+    },
+    {
+      "check": "turn_0_effective_radius",
+      "psi_0": 0.0,
+      "rho_expected": 0.17,
+      "z_expected": 0.0,
+      "note": "psi_0=0: rho_0=R+r=0.17m, z_0=0. Outermost horizontal circle in the z=0 plane."
+    },
+    {
+      "check": "turn_0_loop_normal",
+      "normal_expected": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "note": "All toroidal turns are azimuthal loops with normal = Z-axis"
+    },
+    {
+      "check": "turn_25_effective_radius",
+      "psi_25": 1.5707963267948966,
+      "rho_expected": 0.15,
+      "z_expected": 0.02,
+      "tol_abs": 1e-10,
+      "note": "psi_25 = 2*pi*25/100 = pi/2: rho_25=R+r*cos(pi/2)=R=0.15m, z_25=r*sin(pi/2)=r=0.02m"
+    },
+    {
+      "check": "turn_50_effective_radius",
+      "psi_50": 3.141592653589793,
+      "rho_expected": 0.13,
+      "z_expected": 0.0,
+      "tol_abs": 1e-10,
+      "note": "psi_50 = pi: rho_50=R-r=0.13m (innermost), z_50=0"
+    },
+    {
+      "check": "Bfield_outside",
+      "point": { "x": 0.30, "y": 0, "z": 0 },
+      "Bmag_max": 1e-7,
+      "note": "Outside torus (r > R+r_tube): B must be near zero by Ampere's law."
+    }
+  ]
+}

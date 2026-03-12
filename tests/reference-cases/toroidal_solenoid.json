@@ -1,0 +1,43 @@
+{
+  "description": "Toroidal solenoid: R_major=0.15m, R_minor=0.02m, N=100 turns, I=1A. By Ampere's law, B inside = mu0*N*I/(2*pi*r). B outside should approach zero.",
+  "coil": {
+    "id": "ref-toroid-01",
+    "name": "toroidal solenoid",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "toroidal",
+      "majorRadius": 0.15,
+      "minorRadius": 0.02
+    },
+    "winding": {
+      "turns": 100,
+      "current": 1.0,
+      "channelWidth": 0.005,
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "checks": [
+    {
+      "point": { "x": 0.15, "y": 0, "z": 0 },
+      "Bmag_expected": 1.3333e-4,
+      "tol_rel": 0.02,
+      "note": "B = mu0*N*I/(2*pi*r) = 4pi*1e-7*100*1 / (2*pi*0.15) = 1.3333e-4 T. 2% tolerance for N=100 discretisation."
+    },
+    {
+      "point": { "x": 0.30, "y": 0, "z": 0 },
+      "Bmag_max": 1e-7,
+      "note": "Outside torus (r=0.30m > R_major+R_minor=0.17m): |B| must be near zero by Ampere's law."
+    }
+  ]
+}

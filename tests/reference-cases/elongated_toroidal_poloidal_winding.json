@@ -1,0 +1,107 @@
+{
+  "description": "Racetrack torus, poloidal winding. R=0.10m, r=0.02m, E=0.05m, N=100, I=1A. Each turn is a small loop around the tube cross-section. Turns distributed evenly along the racetrack centreline by arc length.",
+  "coil": {
+    "id": "ref-etoroid-pol-01",
+    "name": "elongated toroidal solenoid (poloidal winding)",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "elongated_toroidal",
+      "majorRadius": 0.10,
+      "minorRadius": 0.02,
+      "extension": 0.05
+    },
+    "winding": {
+      "turns": 100,
+      "current": 1.0,
+      "channelWidth": 0.005,
+      "windingMode": "poloidal",
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "geometry_interpretation": {
+    "centreline": "racetrack (stadium) in XY plane. Right arc centre (E,0,0)=(0.05,0,0), left arc centre (-E,0,0)=(-0.05,0,0). Arc radius R=0.10m. Straight sections at y=±R=±0.10m, each of length 2E=0.10m.",
+    "centreline_perimeter": "L_cl = 2*pi*R + 4*E = 2*pi*0.10 + 4*0.05 = 0.62832 + 0.20000 = 0.82832 m",
+    "tube_cross_section": "circle of radius minorRadius=0.02m",
+    "turn_arc_length_positions": "s_k = k * L_cl / N, k=0..N-1",
+    "turn_k_frame": "At each position s_k, the local Frenet frame (T_hat, N_frame, B_hat=Z_hat) is defined by the centreline tangent. On curved sections, N_frame points outward from the arc centre; on straight sections, N_frame is the outward perpendicular from the racetrack centreline (i.e. +Y for top straight, -Y for bottom straight).",
+    "turn_k_loop_normal": "T_hat at position s_k (the centreline tangent direction)",
+    "turn_k_points": "p_k(psi) = centreline(s_k) + r*cos(psi)*N_frame + r*sin(psi)*Z_hat",
+    "racetrack_sections_ccw": [
+      "Section 0: top straight, from (E,R,0)=(0.05,0.10,0) to (-E,R,0)=(-0.05,0.10,0). T_hat=(-1,0,0), N_frame=(0,1,0), length=2E=0.10m",
+      "Section 1: left arc, centre (-E,0,0)=(-0.05,0,0), angles pi/2 to 3*pi/2 (CCW). T_hat rotates, N_frame points outward from (-E,0,0). Arc length=pi*R=0.31416m",
+      "Section 2: bottom straight, from (-E,-R,0)=(-0.05,-0.10,0) to (E,-R,0)=(0.05,-0.10,0). T_hat=(+1,0,0), N_frame=(0,-1,0), length=2E=0.10m",
+      "Section 3: right arc, centre (E,0,0)=(0.05,0,0), angles -pi/2 to pi/2 (CCW). T_hat rotates, N_frame points outward from (E,0,0). Arc length=pi*R=0.31416m"
+    ],
+    "arc_length_at_section_starts": [
+      "s=0.00000: start of top straight",
+      "s=0.10000: start of left arc",
+      "s=0.41416: start of bottom straight",
+      "s=0.51416: start of right arc",
+      "s=0.82832: = L_cl (wraps back to s=0)"
+    ]
+  },
+  "winding_mode_interpretation": {
+    "windingMode": "poloidal",
+    "description": "Each turn k is a closed loop of circumference 2*pi*r wound around the tube cross-section. The N turns are distributed evenly along the racetrack centreline by arc length at positions s_k = k*L_cl/N.",
+    "per_turn_wire_length": "2 * pi * minorRadius = 2 * pi * 0.02 = 0.12566 m",
+    "per_turn_wire_length_note": "Approximation: ignores toroidal helix pitch. Error < 0.3% for N>=20.",
+    "total_wire_length": "N * 2 * pi * r = 100 * 0.12566 = 12.566 m"
+  },
+  "discretisation_interpretation": {
+    "num_filament_paths": 100,
+    "path_k_description": "Circle of radius r=0.02m in the plane perpendicular to the centreline tangent at arc-length position s_k. Centre at centreline(s_k).",
+    "path_k_parametric": "p_k(psi) = centreline(s_k) + r*cos(psi)*N_frame(s_k) + r*sin(psi)*Z_hat,  psi in [0, 2pi)"
+  },
+  "checks": [
+    {
+      "check": "centreline_perimeter",
+      "perimeter_expected": 0.82832,
+      "tol_abs": 1e-4,
+      "note": "L_cl = 2*pi*R + 4*E = 2*pi*0.10 + 4*0.05 = 0.82832 m"
+    },
+    {
+      "check": "wire_length",
+      "wireLength_expected": 12.566,
+      "tol_abs": 0.001,
+      "note": "N * 2*pi*r = 100 * 2*pi*0.02 = 12.566 m"
+    },
+    {
+      "check": "circumference",
+      "circumference_expected": 0.12566,
+      "tol_abs": 1e-4,
+      "note": "2*pi*r = 2*pi*0.02 = 0.12566 m (per turn)"
+    },
+    {
+      "check": "discretisation_count",
+      "filament_paths_expected": 100,
+      "note": "One filament path per turn"
+    },
+    {
+      "check": "turn_0_centre",
+      "centre_expected": { "x": 0.05, "y": 0.10, "z": 0.0 },
+      "note": "s_0 = 0: start of top straight at (E, R, 0) = (0.05, 0.10, 0)"
+    },
+    {
+      "check": "turn_0_loop_normal",
+      "normal_expected": { "x": -1.0, "y": 0.0, "z": 0.0 },
+      "note": "T_hat on top straight = (-1, 0, 0)"
+    },
+    {
+      "check": "arc_length_step",
+      "ds_expected": 0.0082832,
+      "tol_abs": 1e-6,
+      "note": "ds = L_cl / N = 0.82832 / 100 = 0.0082832 m per turn"
+    }
+  ]
+}

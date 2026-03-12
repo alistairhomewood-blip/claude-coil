@@ -1,0 +1,64 @@
+{
+  "description": "AWG 24, channelWidth=10mm, turns=20. Verifies insulated-OD packing, and that resistance/mass use bare copper area only.",
+  "coil": {
+    "id": "ref-packing-01",
+    "name": "packing check coil",
+    "groupId": null,
+    "colour": null,
+    "notes": null,
+    "locked": false,
+    "center": { "x": 0, "y": 0, "z": 0 },
+    "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+    "geometry": {
+      "type": "circular",
+      "radius": 0.05
+    },
+    "winding": {
+      "turns": 20,
+      "current": 1.0,
+      "channelWidth": 0.010,
+      "wire": {
+        "awg": 24,
+        "label": "AWG24",
+        "bareD": 5.106e-4,
+        "insulatedD": 5.41e-4,
+        "area": 2.047e-7
+      }
+    }
+  },
+  "checks": [
+    {
+      "turnsPerLayer_expected": 18,
+      "note": "floor(0.010 / 5.41e-4) = floor(18.484) = 18. Uses insulatedD."
+    },
+    {
+      "numLayers_expected": 2,
+      "note": "ceil(20 / 18) = 2."
+    },
+    {
+      "channelDepth_expected": 1.082e-3,
+      "tol_abs": 1e-6,
+      "note": "2 layers * 5.41e-4 m = 1.082e-3 m"
+    },
+    {
+      "fitsInChannel_expected": true
+    },
+    {
+      "wireLength_expected": 6.2832,
+      "tol_abs": 1e-4,
+      "note": "Total wire length = circumference * turns = 2*pi*0.05 * 20 = 0.31416 * 20 = 6.2832 m"
+    },
+    {
+      "resistance_rule": "R = CU_RESISTIVITY * wireLength / wire.area = 1.68e-8 * 6.2832 / 2.047e-7",
+      "resistance_expected": 0.5157,
+      "tol_rel": 0.005,
+      "note": "Uses bare copper area (2.047e-7 m²). NOT insulatedD."
+    },
+    {
+      "mass_rule": "mass = CU_DENSITY * wireLength * wire.area = 8960 * 6.2832 * 2.047e-7",
+      "mass_expected": 0.011524,
+      "tol_rel": 0.005,
+      "note": "Uses bare copper area (2.047e-7 m²). NOT insulatedD."
+    }
+  ]
+}

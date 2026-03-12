@@ -1,0 +1,73 @@
+{
+  "description": "Helmholtz coil pair: R=0.1m, separation=R=0.1m, I=1A, N=1 per coil. B at centre = 8*mu0*N*I / (5*sqrt(5)*R). Field uniformity: dBz/dz = 0 at origin by symmetry.",
+  "coils": [
+    {
+      "id": "ref-helmholtz-top",
+      "name": "top coil",
+      "groupId": null,
+      "colour": null,
+      "notes": null,
+      "locked": false,
+      "center": { "x": 0, "y": 0, "z": 0.05 },
+      "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+      "geometry": {
+        "type": "circular",
+        "radius": 0.1
+      },
+      "winding": {
+        "turns": 1,
+        "current": 1.0,
+        "channelWidth": 0.01,
+        "wire": {
+          "awg": 24,
+          "label": "AWG24",
+          "bareD": 5.106e-4,
+          "insulatedD": 5.41e-4,
+          "area": 2.047e-7
+        }
+      }
+    },
+    {
+      "id": "ref-helmholtz-bot",
+      "name": "bottom coil",
+      "groupId": null,
+      "colour": null,
+      "notes": null,
+      "locked": false,
+      "center": { "x": 0, "y": 0, "z": -0.05 },
+      "rotationEulerDeg": { "x": 0, "y": 0, "z": 0 },
+      "geometry": {
+        "type": "circular",
+        "radius": 0.1
+      },
+      "winding": {
+        "turns": 1,
+        "current": 1.0,
+        "channelWidth": 0.01,
+        "wire": {
+          "awg": 24,
+          "label": "AWG24",
+          "bareD": 5.106e-4,
+          "insulatedD": 5.41e-4,
+          "area": 2.047e-7
+        }
+      }
+    }
+  ],
+  "checks": [
+    {
+      "point": { "x": 0, "y": 0, "z": 0 },
+      "Bz_expected": 8.9918e-6,
+      "tol_rel": 0.005,
+      "note": "B = 8*mu0*N*I / (5*sqrt(5)*R) = 8*4pi*1e-7*1*1 / (5*sqrt(5)*0.1) = 8.9918e-6 T. Verified numerically."
+    },
+    {
+      "symmetry_check": "dBz/dz at origin must be zero by up-down symmetry",
+      "note": "Verify by computing B at (0,0,+eps) and (0,0,-eps); difference must be < 1e-10 T for eps=1e-4 m"
+    },
+    {
+      "anti_helmholtz_check": "If bottom coil current is negated to -1A, Bz at origin must be zero",
+      "note": "Anti-Helmholtz: fields cancel at centre. Tests sign convention correctness."
+    }
+  ]
+}
